@@ -170,3 +170,20 @@ docker compose down
 # Stop, remove containers, and delete images and volumes
 docker compose down --volumes --rmi all
 ```
+## Running PHPUnit Tests
+
+To run all the tests:
+
+```sh
+docker compose exec web vendor/bin/phpunit
+```
+For a single test file:
+
+```sh
+docker compose exec web vendor/bin/phpunit tests/Controller/GithubPhpProjectControllerTest.php
+```
+For a single test method:
+
+```sh
+docker compose exec web vendor/bin/phpunit --filter testIndexPageIsSuccessful
+```
