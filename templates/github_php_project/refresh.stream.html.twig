@@ -1,0 +1,36 @@
+<turbo-stream action="replace" target="projects-list">
+    <template>
+        <turbo-frame id="projects-list">
+            <form method="post" action="{{ path('github_projects_refresh') }}" class="mb-3">
+                <button type="submit" class="btn btn-primary" data-turbo="true">
+                    Refresh from GitHub
+                </button>
+            </form>
+
+            {% if projects is empty %}
+                <p>No projects found. Click "Refresh from GitHub" to load data.</p>
+            {% else %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Stars</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('github_projects_detail', {id: project.id}) }}">
+                                        {{ project.name }}
+                                    </a>
+                                </td>
+                                <td>{{ project.stars|number_format }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </turbo-frame>
+    </template>
+</turbo-stream>
