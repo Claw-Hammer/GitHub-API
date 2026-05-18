@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="header-bar">
-        <h1>Most Starred PHP Projects</h1>
+        <h1>Most Starred PHP Projects @ GitHub</h1>
         <form method="post" action="{{ path('github_projects_refresh') }}" data-turbo-stream="true" data-controller="refresh">
             <button type="submit" class="refresh-btn" data-refresh-target="button">
                 <span class="refresh-btn-label" data-refresh-target="label">Refresh from GitHub</span>
