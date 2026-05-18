@@ -30,7 +30,7 @@ class GithubApiService
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function fetchTopPhpProjects(int $limit = 30): array
+    public function fetchTopPhpProjects(int $limit = 10): array
     {
         $response = $this->httpClient->request('GET', self::API_URL, [
             'query' => [
