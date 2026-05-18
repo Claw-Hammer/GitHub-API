@@ -7,6 +7,11 @@ use App\Service\GithubApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\UX\Turbo\TurboStreamResponse;
 
 #[Route('/github-projects')]
@@ -22,6 +27,13 @@ class GithubPhpProjectController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     #[Route('/refresh', name: 'github_projects_refresh', methods: ['POST'])]
     public function refresh(GithubApiService $service, GithubPhpProjectRepository $repository): TurboStreamResponse
     {
