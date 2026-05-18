@@ -3,7 +3,7 @@
 {% block title %}Top PHP Projects{% endblock %}
 
 {% block body %}
-    <h1>Most-Starred PHP Projects</h1>
+    <h1>Most Starred PHP Projects @ GitHub</h1>
 
     <turbo-frame id="projects-list">
         <form method="post" action="{{ path('github_projects_refresh') }}" data-turbo-stream="true" class="mb-3">
@@ -26,7 +26,7 @@
                     {% for project in projects %}
                         <tr>
                             <td>
-                                <a href="{{ path('github_projects_detail', {id: project.id}) }}">
+                                <a href="{{ path('github_projects_detail', {id: project.id}) }}" data-turbo-frame="_top">
                                     {{ project.name }}
                                 </a>
                             </td>
