@@ -52,7 +52,7 @@ class GithubPhpProjectController extends AbstractController
         return new TurboStreamResponse($content);
     }
 
-    #[Route('/{id}', name: 'github_projects_detail')]
+    #[Route('/{id}', name: 'github_projects_detail', requirements: ['id' => '\d+'])]
     public function detail(GithubPhpProjectRepository $repository, int $id): Response
     {
         $project = $repository->find($id);
