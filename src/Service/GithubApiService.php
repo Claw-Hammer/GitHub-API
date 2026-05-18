@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\GithubPhpProject;
 use App\Repository\GithubPhpProjectRepository;
+use DateTimeImmutable;
+use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -50,6 +52,7 @@ class GithubApiService
      * @throws RedirectionExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
+     * @throws Exception
      */
     public function syncProjects(): int
     {
@@ -68,8 +71,8 @@ class GithubApiService
 
             $project->setName($item['full_name']);
             $project->setUrl($item['html_url']);
-            $project->setCreatedDate(new \DateTimeImmutable($item['created_at']));
-            $project->setLastPushDate(isset($item['pushed_at']) ? new \DateTimeImmutable($item['pushed_at']) : null);
+            $project->setCreatedDate(new DateTimeImmutable($item['created_at']));
+            $project->setLastPushDate(isset($item['pushed_at']) ? new DateTimeImmutable($item['pushed_at']) : null);
             $project->setDescription($item['description'] ?? null);
             $project->setStars($item['stargazers_count']);
 
