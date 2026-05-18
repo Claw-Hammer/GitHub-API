@@ -3,38 +3,28 @@
 {% block title %}Top PHP Projects{% endblock %}
 
 {% block body %}
-    <h1>Most Starred PHP Projects @ GitHub</h1>
-
-    <turbo-frame id="projects-list">
-        <form method="post" action="{{ path('github_projects_refresh') }}" data-turbo-stream="true" class="mb-3">
-            <button type="submit" class="btn btn-primary">
-                Refresh from GitHub
+    <div class="header-bar">
+        <h1>Most Starred PHP Projects</h1>
+        <form method="post" action="{{ path('github_projects_refresh') }}" data-turbo-stream="true" data-controller="refresh">
+            <button type="submit" class="refresh-btn" data-refresh-target="button">
+                <span class="refresh-btn-label" data-refresh-target="label">Refresh from GitHub</span>
+                <span class="refresh-spinner" data-refresh-target="spinner"></span>
             </button>
         </form>
+    </div>
 
+    <turbo-frame id="projects-list">
         {% if pagerfanta.nbPages == 0 %}
-            <p>No projects found. Click "Refresh from GitHub" to load data.</p>
+            <div class="empty-state">No projects loaded. Click "Refresh from GitHub" to fetch data.</div>
         {% else %}
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Stars</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for project in pagerfanta.currentPageResults %}
-                        <tr>
-                            <td>
-                                <a href="{{ path('github_projects_detail', {id: project.id}) }}" data-turbo-frame="_top">
-                                    {{ project.name }}
-                                </a>
-                            </td>
-                            <td>{{ project.stars|number_format }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="project-list">
+                {% for project in pagerfanta.currentPageResults %}
+                    <a href="{{ path('github_projects_detail', {id: project.id}) }}" data-turbo-frame="_top" class="project-card">
+                        <span class="project-name">{{ project.name }}</span>
+                        <span class="project-stars">{{ project.stars|number_format }}</span>
+                    </a>
+                {% endfor %}
+            </div>
 
             <nav>
                 <ul class="pagination">

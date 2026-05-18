@@ -3,32 +3,32 @@
 {% block title %}{{ project.name }}{% endblock %}
 
 {% block body %}
-    <h1>{{ project.name }}</h1>
+    <div class="detail-header">
+        <h1>{{ project.name }}</h1>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>URL</th>
-                <td><a href="{{ project.url }}" target="_blank" rel="noopener">{{ project.url }}</a></td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ project.description ?? 'No description available' }}</td>
-            </tr>
-            <tr>
-                <th>Stars</th>
-                <td>{{ project.stars|number_format }}</td>
-            </tr>
-            <tr>
-                <th>Created</th>
-                <td>{{ project.createdDate|date('Y-m-d H:i:s') }}</td>
-            </tr>
-            <tr>
-                <th>Last Push</th>
-                <td>{{ project.lastPushDate ? project.lastPushDate|date('Y-m-d H:i:s') : 'N/A' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {% if project.description %}
+        <div class="detail-description">{{ project.description }}</div>
+    {% endif %}
 
-    <a href="{{ path('github_projects_index') }}" class="btn btn-secondary">Back to list</a>
+    <div class="detail-grid">
+        <div class="detail-metric">
+            <div class="detail-metric-label">Stars</div>
+            <div class="detail-metric-value stars">{{ project.stars|number_format }}</div>
+        </div>
+        <div class="detail-metric">
+            <div class="detail-metric-label">Created</div>
+            <div class="detail-metric-value">{{ project.createdDate|date('M d, Y') }}</div>
+        </div>
+        <div class="detail-metric">
+            <div class="detail-metric-label">Last Push</div>
+            <div class="detail-metric-value">{{ project.lastPushDate ? project.lastPushDate|date('M d, Y') : 'N/A' }}</div>
+        </div>
+        <div class="detail-metric">
+            <div class="detail-metric-label">Repository</div>
+            <div class="detail-metric-value"><a href="{{ project.url }}" target="_blank" rel="noopener">{{ project.url }}</a></div>
+        </div>
+    </div>
+
+    <a href="{{ path('github_projects_index') }}" class="back-link">Back to projects</a>
 {% endblock %}
