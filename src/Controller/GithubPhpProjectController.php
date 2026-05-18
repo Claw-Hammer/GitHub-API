@@ -7,7 +7,7 @@ use App\Service\GithubApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\UX\Turbo\Attribute\Stream;
+use Symfony\UX\Turbo\TurboStreamResponse;
 
 #[Route('/github-projects')]
 class GithubPhpProjectController extends AbstractController
@@ -22,6 +22,20 @@ class GithubPhpProjectController extends AbstractController
         ]);
     }
 
+    #[Route('/refresh', name: 'github_projects_refresh', methods: ['POST'])]
+    public function refresh(GithubApiService $service, GithubPhpProjectRepository $repository): TurboStreamResponse
+    {
+        $service->syncProjects();
+
+        $projects = $repository->findBy([], ['stars' => 'DESC']);
+
+        $content = $this->renderView('github_php_project/refresh.stream.html.twig', [
+            'projects' => $projects,
+        ]);
+
+        return new TurboStreamResponse($content);
+    }
+
     #[Route('/{id}', name: 'github_projects_detail')]
     public function detail(GithubPhpProjectRepository $repository, int $id): Response
     {
@@ -33,19 +47,6 @@ class GithubPhpProjectController extends AbstractController
 
         return $this->render('github_php_project/detail.html.twig', [
             'project' => $project,
-        ]);
-    }
-
-    #[Route('/refresh', name: 'github_projects_refresh', methods: ['POST'])]
-    #[Stream]
-    public function refresh(GithubApiService $service, GithubPhpProjectRepository $repository): Response
-    {
-        $service->syncProjects();
-
-        $projects = $repository->findBy([], ['stars' => 'DESC']);
-
-        return $this->render('github_php_project/refresh.stream.html.twig', [
-            'projects' => $projects,
         ]);
     }
 }
