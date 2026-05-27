@@ -8,9 +8,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DefaultController extends AbstractController
 {
-    #[Route('/', name: 'index')]
-    public function index(): Response
-    {
-        return $this->redirectToRoute('github_projects_index');
-    }
+//    #[Route('/', name: 'index')]
+//    public function index(): Response
+//    {
+//        return $this->redirectToRoute('github_projects_index');
+//    }
 }
