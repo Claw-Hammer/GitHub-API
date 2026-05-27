@@ -6,6 +6,8 @@ use App\Entity\GithubPhpProject;
 use App\Repository\GithubPhpProjectRepository;
 use DateTimeImmutable;
 use Exception;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -16,10 +18,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class GithubApiService
 {
     private const API_URL = 'https://api.github.com/search/repositories';
+    private const CACHE_TTL = 60; // 1 minute
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly GithubPhpProjectRepository $repository,
+        private readonly CacheItemPoolInterface $cache,
+        private readonly string $githubToken,
     ) {
     }
 
@@ -29,21 +34,40 @@ class GithubApiService
      * @throws RedirectionExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
+     * @throws InvalidArgumentException
      */
-    public function fetchTopPhpProjects(int $limit = 50): array
+    public function fetchTopPhpProjects(int $limit = 500): array //increasing limit to 500
     {
-        $response = $this->httpClient->request('GET', self::API_URL, [
+        $cacheKey = 'github_php_projects_limit_' . $limit;
+        $cacheItem = $this->cache->getItem($cacheKey);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
+
+        $options = [
             'query' => [
                 'q' => 'language:php',
                 'sort' => 'stars',
                 'order' => 'desc',
                 'per_page' => $limit,
             ],
-        ]);
+        ];
+
+        if ($this->githubToken !== '') {
+            $options['auth_bearer'] = $this->githubToken;
+        }
+
+        $response = $this->httpClient->request('GET', self::API_URL, $options);
 
         $data = $response->toArray();
+        $items = $data['items'] ?? [];
 
-        return $data['items'] ?? [];
+        $cacheItem->set($items);
+        $cacheItem->expiresAfter(self::CACHE_TTL);
+        $this->cache->save($cacheItem);
+
+        return $items;
     }
 
     /**
@@ -58,6 +82,7 @@ class GithubApiService
     {
         $items = $this->fetchTopPhpProjects();
         $count = 0;
+        $project = null;
 
         foreach ($items as $item) {
             $existing = $this->repository->findOneBy(['repositoryId' => $item['id']]);
@@ -76,8 +101,12 @@ class GithubApiService
             $project->setDescription($item['description'] ?? null);
             $project->setStars($item['stargazers_count']);
 
-            $this->repository->save($project, true);
+            $this->repository->save($project);  // no flush here to avoid multiple commits to the DB
             ++$count;
+        }
+
+        if ($project !== null) {
+            $this->repository->save($project, true); // single flush
         }
 
         return $count;
