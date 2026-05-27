@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Turbo\TurboStreamResponse;
 
-#[Route('/github-projects')]
+#[Route('/')]
 class GithubPhpProjectController extends AbstractController
 {
     #[Route('', name: 'github_projects_index')]
