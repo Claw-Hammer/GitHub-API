@@ -1,4 +1,4 @@
-# VUMC VICTR Flagship Symfony Application Template
+# Symfony Application Template
 
 ## Prerequisites
 
