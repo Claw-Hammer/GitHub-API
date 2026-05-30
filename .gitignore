@@ -21,3 +21,6 @@
 
 /compose.override.yaml
 /config/reference.php
+
+.idea/
+.opencode

@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Top PHP Projects{% endblock %}
+
+{% block body %}
+    <div class="header-bar">
+        <h1>Most Starred PHP Projects @ GitHub</h1>
+        <form method="post" action="{{ path('github_projects_refresh') }}" data-turbo-stream="true" data-controller="refresh">
+            <button type="submit" class="refresh-btn" data-refresh-target="button">
+                <span class="refresh-btn-label" data-refresh-target="label">Refresh from GitHub</span>
+                <span class="refresh-spinner" data-refresh-target="spinner"></span>
+            </button>
+        </form>
+    </div>
+
+    <turbo-frame id="projects-list">
+        {% if pagerfanta.nbPages == 0 %}
+            <div class="empty-state">No projects loaded. Click "Refresh from GitHub" to fetch data.</div>
+        {% else %}
+            <div class="project-list">
+                {% for project in pagerfanta.currentPageResults %}
+                    <a href="{{ path('github_projects_detail', {id: project.id}) }}" data-turbo-frame="_top" class="project-card">
+                        <span class="project-name">{{ project.name }}</span>
+                        <span class="project-stars">{{ project.stars|number_format }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <nav>
+                <ul class="pagination">
+                    {% if pagerfanta.hasPreviousPage %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('github_projects_index', {page: pagerfanta.previousPage}) }}" data-turbo-frame="_top">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    {% endif %}
+
+                    {% set startPage = pagerfanta.currentPage - 2 > 0 ? pagerfanta.currentPage - 2 : 1 %}
+                    {% set endPage = startPage + 4 < pagerfanta.nbPages ? startPage + 4 : pagerfanta.nbPages %}
+
+                    {% if startPage > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('github_projects_index', {page: 1}) }}" data-turbo-frame="_top">1</a>
+                        </li>
+                        {% if startPage > 2 %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for page in startPage..endPage %}
+                        {% if page == pagerfanta.currentPage %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('github_projects_index', {page: page}) }}" data-turbo-frame="_top">{{ page }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if endPage < pagerfanta.nbPages %}
+                        {% if endPage < pagerfanta.nbPages - 1 %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                        {% endif %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('github_projects_index', {page: pagerfanta.nbPages}) }}" data-turbo-frame="_top">{{ pagerfanta.nbPages }}</a>
+                        </li>
+                    {% endif %}
+
+                    {% if pagerfanta.hasNextPage %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('github_projects_index', {page: pagerfanta.nextPage}) }}" data-turbo-frame="_top">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </turbo-frame>
+{% endblock %}
