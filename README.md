@@ -1,4 +1,4 @@
-# VUMC VICTR GitHub PHP Projects Dashboard
+# Symfony GitHub PHP Projects Dashboard
 
 A Symfony application that fetches, stores, and displays the most-starred public PHP projects from GitHub, presented in a modern dark terminal-inspired UI.
 
