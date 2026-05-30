@@ -132,32 +132,6 @@ docker compose exec web bash
 docker compose exec web vendor/bin/phpunit --filter TestClassName
 ```
 
-## Project Structure
-
-```
-src/
-├── Controller/
-│   ├── DefaultController.php          # Redirects / to /github-projects
-│   └── GithubPhpProjectController.php # Index, detail, and refresh routes
-├── Entity/
-│   └── GithubPhpProject.php           # Doctrine entity for github_php_projects
-├── Repository/
-│   └── GithubPhpProjectRepository.php # Database queries
-└── Service/
-    └── GithubApiService.php           # GitHub API client and sync logic
-
-templates/github_php_project/
-├── index.html.twig                    # Project list with pagination
-├── detail.html.twig                   # Single project detail view
-└── refresh.stream.html.twig           # Turbo Stream response for refresh
-
-assets/
-├── controllers/
-│   └── refresh_controller.js          # Stimulus controller for loading state
-└── styles/
-    └── app.css                        # Dark terminal theme
-```
-
 ## Cleanup
 
 ```sh
